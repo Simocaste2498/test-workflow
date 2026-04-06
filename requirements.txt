@@ -1,0 +1,4 @@
+googleads
+google-cloud-bigquery
+pandas
+zeep
