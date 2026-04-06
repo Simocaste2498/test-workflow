@@ -32,7 +32,7 @@ def flatten_and_format_dict(data):
     return result
 
 # Function to retrieve all objects from a Google Ad Manager service
-def get_all_service_object(service_name, json_key, version='v202502'):
+def get_all_service_object(service_name, json_key, version='v202602'):
     oauth2_client = oauth2.GoogleServiceAccountClient(json_key, oauth2.GetAPIScope('ad_manager'))
     client = ad_manager.AdManagerClient(oauth2_client, APPLICATION_NAME, network_code=35821442)
 
