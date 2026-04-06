@@ -1,1 +1,33 @@
+name: GAM ETL to BigQuery
 
+on:
+  schedule:
+    - cron: "0 6 * * *"  # ogni giorno alle 06:00 UTC
+  workflow_dispatch:     # esecuzione manuale
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Authenticate Google Cloud
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GOOGLE_SERVICE_ACCOUNT_JSON" > key.json
+
+      - name: Run script
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SA_KEY }}
+        run: python main.py
