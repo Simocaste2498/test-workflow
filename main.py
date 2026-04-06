@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # BigQuery configuration
     PROJECT_ID = 'bigdataitaetl-327308'
     DATASET_ID = 'operating_adv'
-    JSON_KEY = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+    JSON_KEY = "key.json"
     APPLICATION_NAME = "GAM Downloader"
 
     services = ['PlacementService']
