@@ -78,7 +78,7 @@ if __name__ == "__main__":
     for service_name in services:
         table_name = service_name.lower() + '_test_sc'
         print("Getting results for {}".format(service_name))
-        results = get_all_service_object(service_name, JSON_KEY, version='v202502')
+        results = get_all_service_object(service_name, JSON_KEY, version='v202602')
         print("Serializing results for {}".format(service_name))
         serialized_data = json.loads(json.dumps([helpers.serialize_object(item) for item in results]))
         df = pd.DataFrame([flatten_and_format_dict(x) for x in serialized_data])
