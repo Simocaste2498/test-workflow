@@ -1,0 +1,33 @@
+name: GAM ETL to BigQuery
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create credentials files
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > gcp_key.json
+          echo '${{ secrets.GAM_SA_KEY }}' > gam_key.json
+
+      - name: Run script
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcp_key.json
+          GAM_JSON_KEY: gam_key.json
+        run: python main_video_opportunities.py
