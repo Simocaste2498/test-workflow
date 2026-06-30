@@ -59,7 +59,7 @@ def get_all_service_object(service_name, json_key, version='v202602'):
 
 # Function to upload DataFrame to BigQuery
 def upload_df_to_bigquery(df, table_name):
-    client = bigquery.Client.from_service_account_json(JSON_KEY, project=PROJECT_ID)
+    client = bigquery.Client.from_service_account_json(BQ_JSON_KEY, project=PROJECT_ID)
     job_config = bigquery.job.LoadJobConfig()
     job_config.write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
     job = client.load_table_from_dataframe(df, "{}.{}.{}".format(PROJECT_ID, DATASET_ID, table_name), job_config=job_config)
@@ -70,7 +70,8 @@ if __name__ == "__main__":
     # BigQuery configuration
     PROJECT_ID = 'bigdataitaetl-327308'
     DATASET_ID = 'operating_adv'
-    JSON_KEY = "key.json"
+    GAM_JSON_KEY = "gam_key.json"
+    BQ_JSON_KEY = "gcp_key.json"
     APPLICATION_NAME = "GAM Downloader"
 
     services = ['PlacementService']
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     for service_name in services:
         table_name = service_name.lower() + '_test_sc'
         print("Getting results for {}".format(service_name))
-        results = get_all_service_object(service_name, JSON_KEY, version='v202602')
+        results = get_all_service_object(service_name, GAM_JSON_KEY, version='v202602')
         print("Serializing results for {}".format(service_name))
         serialized_data = json.loads(json.dumps([helpers.serialize_object(item) for item in results]))
         df = pd.DataFrame([flatten_and_format_dict(x) for x in serialized_data])
