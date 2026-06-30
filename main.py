@@ -59,7 +59,7 @@ def get_all_service_object(service_name, json_key, version='v202602'):
 
 # Function to upload DataFrame to BigQuery
 def upload_df_to_bigquery(df, table_name):
-    client = bigquery.Client()
+    client = bigquery.Client.from_service_account_json(JSON_KEY, project=PROJECT_ID)
     job_config = bigquery.job.LoadJobConfig()
     job_config.write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
     job = client.load_table_from_dataframe(df, "{}.{}.{}".format(PROJECT_ID, DATASET_ID, table_name), job_config=job_config)
