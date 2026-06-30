@@ -1,4 +1,4 @@
-name: GAM ETL to BigQuery
+name: ETL Gam Video Opportunities
 
 on:
   schedule:
