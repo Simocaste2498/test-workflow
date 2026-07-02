@@ -25,7 +25,7 @@ OUTPUT_CSV = "gam_capped_opportunities.csv"
 
 PROJECT_ID = "bigdataitaetl-327308"
 DATASET_ID = "operating_adv"
-TABLE_NAME = "stg_gam_video_capped_opportunities"
+TABLE_NAME = "gam_video_capped_opportunities"
 
 
 # Optional. Set GAM_REPORT_RESOURCE_NAME to reuse an existing report resource:
