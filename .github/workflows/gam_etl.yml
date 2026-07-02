@@ -31,3 +31,12 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: gcp_key.json
           GAM_JSON_KEY: gam_key.json
         run: python main.py
+
+      - name: Notify Teams on success
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "text": "✅ ETL GAM completato con successo.\nRepository: '${{ github.repository }}'\nRun: https://github.com/'${{ github.repository }}'/actions/runs/'${{ github.run_id }}'"
+               }' \
+               "${{ secrets.TEAMS_WEBHOOK_URL }}"
