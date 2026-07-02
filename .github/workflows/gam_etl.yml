@@ -32,11 +32,14 @@ jobs:
           GAM_JSON_KEY: gam_key.json
         run: python main.py
 
-      - name: Notify Teams on success
+      - name: Notify Teams
         if: success()
         run: |
-          curl -H "Content-Type: application/json" \
-               -d '{
-                 "text": "✅ ETL GAM completato con successo.\nRepository: '${{ github.repository }}'\nRun: https://github.com/'${{ github.repository }}'/actions/runs/'${{ github.run_id }}'"
-               }' \
-               "${{ secrets.TEAMS_WEBHOOK_URL }}"
+          curl -X POST "${{ secrets.TEAMS_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "message":"✅ ETL GAM completato con successo",
+              "status":"SUCCESS",
+              "repository":"${{ github.repository }}",
+              "runUrl":"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'
