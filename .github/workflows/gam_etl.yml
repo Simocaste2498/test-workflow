@@ -31,3 +31,25 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: gcp_key.json
           GAM_JSON_KEY: gam_key.json
         run: python main.py
+
+      - name: Send success email
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+              server_address: smtp.office365.com
+              server_port: 587
+              secure: false
+              username: ${{ secrets.OUTLOOK_USERNAME }}
+              password: ${{ secrets.OUTLOOK_PASSWORD }}
+              subject: "✅ ETL GAM completato con successo"
+              to: tua.email@outlook.com
+              from: GitHub Actions <${{ secrets.OUTLOOK_USERNAME }}>
+              body: |
+                Il workflow è terminato con successo.
+          
+                Repository: ${{ github.repository }}
+                Workflow: ${{ github.workflow }}
+                Run number: ${{ github.run_number }}
+          
+                Link:
+                https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
