@@ -260,6 +260,7 @@ def upload_df_to_bigquery(df, table_name):
         schema=BQ_SCHEMA,
         create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,  #se la tabella non esiste, la crea
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+        time_partitioning=bigquery.TimePartitioning( type_=bigquery.TimePartitioningType.DAY, field="date", ),
     )
     table_id = "{}.{}.{}".format(PROJECT_ID, DATASET_ID, table_name)
     job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
