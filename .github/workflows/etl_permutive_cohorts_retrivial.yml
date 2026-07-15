@@ -24,7 +24,7 @@ jobs:
           {
             "permutive": ${{ secrets.PERMUTIVE_API_KEY }},
             "google": {
-              "spreadsheet_id": "${{ secrets.GOOGLE_SPREADSHEET_ID }}"
+              "spreadsheet_id": "${{ secrets.GOOGLE_SPREADSHEET_COHORTS }}"
             }
           }
           EOF
