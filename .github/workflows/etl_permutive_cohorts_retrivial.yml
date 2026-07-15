@@ -34,9 +34,9 @@ jobs:
 
       - name: Create credentials files
         run: |
-          echo '${{ secrets.GCP_SA_KEY }}' > gcp_key.json
+          echo '${{ secrets.GCP_SC_SA }}' > gcp_key.json
 
       - name: Run script
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: gcp_key.json
+          GOOGLE_APPLICATION_CREDENTIALS: gcp-sc-sa.json
         run: python permutive_sync.py
