@@ -1,0 +1,42 @@
+name: ETL Gam Video Opportunities
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      
+      - name: Create config file
+        run: |
+          cat > key_permutive.json << EOF
+          {
+            "permutive": ${{ secrets.PERMUTIVE_API_KEY }},
+            "google": {
+              "spreadsheet_id": "${{ secrets.GOOGLE_SPREADSHEET_ID }}"
+            }
+          }
+          EOF
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create credentials files
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > gcp_key.json
+
+      - name: Run script
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcp_key.json
+        run: python permutive_sync.py
