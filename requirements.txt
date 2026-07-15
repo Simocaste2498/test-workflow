@@ -4,3 +4,6 @@ pandas
 zeep
 pyarrow
 requests
+gspread
+python-dotenv
+google-auth
