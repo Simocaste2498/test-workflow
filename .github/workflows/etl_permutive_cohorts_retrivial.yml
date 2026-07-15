@@ -34,7 +34,7 @@ jobs:
 
       - name: Create credentials files
         run: |
-          echo '${{ secrets.GCP_SC_SA }}' > gcp_key.json
+          echo '${{ secrets.GCP_SC_SA }}' > gcp-sc-sa.json
 
       - name: Run script
         env:
