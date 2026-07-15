@@ -1,4 +1,4 @@
-name: ETL Gam Video Opportunities
+name: ETL Permutive Cohorts Retrivial
 
 on:
   schedule:
