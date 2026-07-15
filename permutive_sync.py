@@ -381,6 +381,7 @@ def build_dataframe(rows):
         "last_updated_at",
         "description",
         "live audience",
+        "live_audience_size",
         "tags"
     }
 
