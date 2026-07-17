@@ -1,4 +1,4 @@
-name: ETL Permutive Cohorts Retrivial
+name: ETL Permutive Cohorts Retrievial
 
 on:
   schedule:
