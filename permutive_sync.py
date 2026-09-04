@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from datetime import datetime, timezone
 
 import requests
@@ -8,6 +9,7 @@ import gspread
 
 from dotenv import load_dotenv
 from google.oauth2.service_account import Credentials
+from gspread.exceptions import APIError
 
 #DOWNLOAD COHORTS DA PERMUTIVE (CON FILTRO SU TAGS CONTENENTE "ADV_AI") E UPLOAD SU GOOGLE SHEETS
 
