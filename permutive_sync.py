@@ -450,23 +450,76 @@ def build_dataframe(rows):
 # GOOGLE SHEETS
 # ==========================================================
 
+#Lista dei possibili errori transitori che possono essere gestiti con un retry
+TRANSIENT_STATUS_CODES = {
+    429,
+    500,
+    502,
+    503,
+    504
+}
+
+#Funzione di retry per le operazioni su Google Sheets, con backoff esponenziale
+def retry_google_operation(
+    operation,
+    description,
+    max_attempts=5,
+    initial_delay=5,
+    max_delay=30
+):
+
+    for attempt in range(1, max_attempts + 1):
+
+        try:
+            return operation()
+
+        except APIError as error:
+            response = getattr(error, "response", None)
+            status_code = getattr(
+                response,
+                "status_code",
+                None
+            )
+
+            if (
+                status_code not in TRANSIENT_STATUS_CODES
+                or attempt == max_attempts
+            ):
+                raise
+
+            delay = min(
+                initial_delay * (2 ** (attempt - 1)),
+                max_delay
+            )
+
+            print(
+                f"{description} fallita "
+                f"(HTTP {status_code}). "
+                f"Nuovo tentativo tra {delay} secondi..."
+            )
+
+            time.sleep(delay)
+
 def upload_to_google_sheet(df):
 
     gc = get_google_client()
 
-    spreadsheet = gc.open_by_key(
-        SPREADSHEET_ID
+    spreadsheet = retry_google_operation(
+        lambda: gc.open_by_key(SPREADSHEET_ID),
+        "Apertura Google Sheet"
     )
 
     try:
 
-        worksheet = (
-            spreadsheet.worksheet(
-                SHEET_NAME
-            )
+        worksheet = retry_google_operation(
+            lambda: spreadsheet.worksheet(SHEET_NAME),
+            "Lettura worksheet"
         )
 
-        worksheet.clear()   #cancella i dati esistenti
+        retry_google_operation(
+            worksheet.clear,
+            "Pulizia worksheet"
+        )
 
     except gspread.WorksheetNotFound:
 
@@ -493,7 +546,10 @@ def upload_to_google_sheet(df):
         "Upload su Google Sheets..."
     )
 
-    worksheet.update(data)
+    retry_google_operation(
+        lambda: worksheet.update(data),
+        "Aggiornamento worksheet"
+    )
 
     print(
         "Upload completato."
