@@ -454,11 +454,11 @@ def build_dataframe(rows):
 
 #Lista dei possibili errori transitori che possono essere gestiti con un retry
 TRANSIENT_STATUS_CODES = {
-    429,
-    500,
-    502,
-    503,
-    504
+    429,   #Troppe richieste al server
+    500,   #Errore temporaneo del server
+    502,   #Bad gateway: errore temporaneo del server intermedio
+    503,   #Service unavailable: errore temporaneo del server Google
+    504    #Gateway timeout: un server intermedio ha atteso troppo a lungo per una risposta di Google
 }
 
 #Funzione di retry per le operazioni su Google Sheets, con backoff esponenziale
