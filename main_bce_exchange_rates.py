@@ -62,7 +62,11 @@ response.raise_for_status()
 
 reader = csv.DictReader(io.StringIO(response.text))  #trasforma in un dizionario le righe del CSV restituito dalla BCE, con le intestazioni come chiavi
 if not reader.fieldnames or "OBS_VALUE" not in reader.fieldnames:
-    raise ValueError("La risposta BCE non contiene la colonna OBS_VALUE")
+        raise ValueError(
+        f"Risposta BCE inattesa: status={response.status_code}, "
+        f"content_type={response.headers.get('Content-Type')}, "
+        f"url={response.url}, body={response.text[:500]!r}"
+    )
 
 api_rows = list(reader)
 rows_by_date = {
