@@ -44,8 +44,8 @@ DATASET_ID = "operating_adv"
 TABLE_NAME = "bce_exchange_rates"
 
 params = {
-    # La finestra precedente serve a trovare l'ultimo valore nei giorni festivi.
-    "startPeriod": (target_date - timedelta(days=1)).isoformat(),
+    # La finestra precedente serve a trovare l'ultimo valore nei giorni festivi (prendo 5 giorni, supponendo che non ci siano più di 5 giorni consecutivi senza quotazioni).
+    "startPeriod": (target_date - timedelta(days=5)).isoformat(),
     "endPeriod": target_date.isoformat(),
 }
 headers = {"Accept": "text/csv"}
