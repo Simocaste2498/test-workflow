@@ -254,18 +254,24 @@ def prepare_df_for_bigquery(df):
 # Function to upload DataFrame to BigQuery
 def upload_df_to_bigquery(df, table_name):
     client = bigquery.Client.from_service_account_json(BQ_JSON_KEY, project=PROJECT_ID)
-    #job_config = bigquery.job.LoadJobConfig(schema=BQ_SCHEMA)
-    #job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
     job_config = bigquery.LoadJobConfig(
         schema=BQ_SCHEMA,
-        create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,  #se la tabella non esiste, la crea
-        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+        create_disposition=bigquery.CreateDisposition.CREATE_IF_NEEDED,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,  #sostituisce la partizione se esiste, altirmenti la crea
         time_partitioning=bigquery.TimePartitioning( type_=bigquery.TimePartitioningType.DAY, field="date", ),
     )
     table_id = "{}.{}.{}".format(PROJECT_ID, DATASET_ID, table_name)
-    job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
-    job.result()
-    print("Uploaded to {}".format(table_id))
+
+    for report_date, date_df in df.groupby("date", sort=True):
+        partition_id = report_date.strftime("%Y%m%d")
+        partitioned_table_id = f"{table_id}${partition_id}"
+        job = client.load_table_from_dataframe(
+            date_df,
+            partitioned_table_id,
+            job_config=job_config,
+        )
+        job.result()
+        print(f"Replaced partition {partition_id} in {table_id}")
 
 
 def get_report(session, network_code):
@@ -289,12 +295,10 @@ if __name__ == "__main__":
 
     session = get_session(GAM_JSON_KEY)
     report = get_report(session, NETWORK_CODE)
-    report.to_csv(OUTPUT_CSV, index=False)
     upload_df_to_bigquery(prepare_df_for_bigquery(report), TABLE_NAME)
 
     test_end_time = time.time()
     total_time = test_end_time - test_start_time
 
     print(f"Rows downloaded: {len(report)}")
-    print(f"Saved report to: {OUTPUT_CSV}")
     print(f"Total Test Time: {total_time:.2f} seconds\n")
