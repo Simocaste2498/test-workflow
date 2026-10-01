@@ -2,7 +2,7 @@ name: ETL Permutive Cohorts Retrievial
 
 on:
   schedule:
-    - cron: "15 1 * * *"
+    - cron: "00 1 * * *"
   workflow_dispatch:
 
 jobs:
