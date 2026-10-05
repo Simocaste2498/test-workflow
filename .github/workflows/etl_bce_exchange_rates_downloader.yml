@@ -2,7 +2,7 @@ name: ETL BCE Exchange Rates Downloader
 
 on:
   schedule:
-    - cron: "15 1 * * *"
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 jobs:
