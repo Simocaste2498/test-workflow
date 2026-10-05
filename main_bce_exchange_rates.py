@@ -1,8 +1,9 @@
 import csv
 import io
 from datetime import date, timedelta
-
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import pandas as pd
 from google.cloud import bigquery
 from google.api_core.exceptions import NotFound
@@ -57,12 +58,40 @@ headers = {"Accept": "text/csv"}
 # }
 
 
-response = requests.get(url, params=params, headers=headers, verify=False)
+class LoggingRetry(Retry):
+    """Retry che stampa il numero del tentativo e il motivo del fallimento."""
+
+    def increment(self, *args, **kwargs):
+        new_retry = super().increment(*args, **kwargs)
+        response = kwargs.get("response")
+        reason = f"status {response.status}" if response else f"errore di rete: {kwargs.get('error')}"
+        failed_attempts = len(new_retry.history)
+        print(
+            f"Tentativo {failed_attempts}/{self.total + failed_attempts} fallito ({reason}). "
+            f"Nuovo tentativo tra {new_retry.get_backoff_time():.0f}s"
+        )
+        return new_retry
+
+
+# Riprova automaticamente in caso di errori temporanei del server (502/503/504),
+# con attese crescenti tra un tentativo e l'altro (subito, poi 10s, 20s, 40s, 80s).
+retry = LoggingRetry(
+    total=5,
+    backoff_factor=5,
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET"],
+)
+session = requests.Session()
+session.mount("https://", HTTPAdapter(max_retries=retry))
+
+response = session.get(
+    url, params=params, headers=headers, verify=False, timeout=(10, 60)
+)
 response.raise_for_status()
 
 reader = csv.DictReader(io.StringIO(response.text))  #trasforma in un dizionario le righe del CSV restituito dalla BCE, con le intestazioni come chiavi
 if not reader.fieldnames or "OBS_VALUE" not in reader.fieldnames:
-   raise ValueError(
+        raise ValueError(
         f"Risposta BCE inattesa: status={response.status_code}, "
         f"fieldnames={reader.fieldnames!r}, "    #intestazione del csv restituito e letto da DictReader
         f"content_type={response.headers.get('Content-Type')}, " #tipo di contenuto restituito dalla BCE (text/csv,text/html, None se manca intestazione)
