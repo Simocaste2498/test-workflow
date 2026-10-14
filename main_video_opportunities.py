@@ -32,9 +32,6 @@ TABLE_NAME = "gam_video_capped_opportunities"
 # networks/{network_code}/reports/{report_id}
 REPORT_RESOURCE_NAME = os.getenv("GAM_REPORT_RESOURCE_NAME")
 
-# Optional. Set DEVICE_CATEGORY_ID to reproduce the SOAP Statement filter.
-DEVICE_CATEGORY_ID = os.getenv("DEVICE_CATEGORY_ID")
-
 #REST dimensions names
 REPORT_DIMENSIONS = [
     "DATE",
@@ -74,20 +71,16 @@ def raise_for_status(response):
 
 
 def make_report_definition():
-
-    filters = []
-
-    #Adding a filter on Request Type if the DEVICE_CATEGORY_ID is set as environment variable
-    if DEVICE_CATEGORY_ID:
-        filters.append(
-                {
-                    "fieldFilter": {
-                        "field": {"dimension": "REQUEST_TYPE_NAME"},
-                        "operation": "IN",
-                        "values": [{"stringValue": "Video Tag"}],
-                    }
-                }
-            )
+  
+      #  filters.append(
+      #          {
+      #              "fieldFilter": {
+      #                  "field": {"dimension": "REQUEST_TYPE_NAME"},
+      #                  "operation": "IN",
+      #                  "values": [{"stringValue": "Video Tag"}],
+      #              }
+      #          }
+      #      )
   
 
     #Report definition for the GAM report, including dimensions, metrics, and optional filters  
@@ -98,9 +91,6 @@ def make_report_definition():
         "dimensions": REPORT_DIMENSIONS,
         "metrics": REPORT_METRICS,
     }
-
-    if filters:
-        definition["filters"] = filters
 
     return definition
 
