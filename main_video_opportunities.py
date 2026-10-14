@@ -77,6 +77,7 @@ def make_report_definition():
 
     filters = []
 
+    #Adding a filter on Request Type if the DEVICE_CATEGORY_ID is set as environment variable
     if DEVICE_CATEGORY_ID:
         filters.append(
                 {
@@ -88,7 +89,8 @@ def make_report_definition():
                 }
             )
   
-        
+
+    #Report definition for the GAM report, including dimensions, metrics, and optional filters  
     definition = {
         "reportType": "HISTORICAL",
         "dateRange": {"relative": "YESTERDAY"},
